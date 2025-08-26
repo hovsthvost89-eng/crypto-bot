@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "functions": {
+    "api/webhook.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/webhook",
+      "dest": "/api/webhook.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/webhook.js"
+    }
+  ],
+  "env": {
+    "BOT_TOKEN": "@bot_token"
+  }
+}
