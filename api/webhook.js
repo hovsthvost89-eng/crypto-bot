@@ -15,17 +15,31 @@ if (!token) {
 // Создаем экземпляр бота без polling для webhook
 const bot = new TelegramBot(token);
 
-// Инициализируем модульные обработчики
-const callbackHandler = new CallbackHandler(bot);
-const basicCommands = new BasicCommands(bot);
-
-// Регистрируем команды
-basicCommands.registerCommands();
-
 // Обработчик для webhook
 module.exports = async (req, res) => {
-    if (req.method === 'POST') {
-        try {
+    // Импортируем модули внутри функции для Vercel
+    try {
+        const CallbackHandler = require('../src/handlers/callbackHandler');
+        const BasicCommands = require('../src/commands/basicCommands');
+        const { getWelcomeWithMenu, getMainMenuKeyboard, getHelpMessage } = require('../ui');
+        
+        // Импортируем Exchange Manager и сервисы
+        const ExchangeManager = require('../src/exchangeManager');
+        
+        // Инициализируем Exchange Manager
+        const exchangeManager = new ExchangeManager();
+        
+        // Инициализируем модульные обработчики
+        const callbackHandler = new CallbackHandler(bot);
+        const basicCommands = new BasicCommands(bot);
+        
+        // Передаем exchangeManager в basicCommands для работы с API
+        basicCommands.exchangeManager = exchangeManager;
+        
+        // Регистрируем команды
+        basicCommands.registerCommands();
+
+        if (req.method === 'POST') {
             const update = req.body;
             
             // Обрабатываем обновление
@@ -56,7 +70,7 @@ module.exports = async (req, res) => {
                 }
                 // Другие текстовые сообщения
                 else if (msg.text && !msg.text.startsWith('/')) {
-                    basicCommands.handleTextMessage(msg);
+                    await basicCommands.handleTextMessage(msg);
                 }
             }
             
@@ -79,15 +93,19 @@ module.exports = async (req, res) => {
             }
             
             res.status(200).json({ ok: true });
-        } catch (error) {
-            console.error('❌ Ошибка обработки webhook:', error);
-            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            // GET запрос для проверки работоспособности
+            res.status(200).json({ 
+                status: 'Crypto Tracker Bot is running',
+                timestamp: new Date().toISOString(),
+                exchanges: 'Ready for API calls'
+            });
         }
-    } else {
-        // GET запрос для проверки работоспособности
-        res.status(200).json({ 
-            status: 'Crypto Tracker Bot is running',
-            timestamp: new Date().toISOString()
+    } catch (error) {
+        console.error('❌ Ошибка обработки webhook:', error);
+        res.status(500).json({ 
+            error: 'Internal server error',
+            message: error.message 
         });
     }
 };
