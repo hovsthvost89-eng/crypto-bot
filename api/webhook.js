@@ -23,18 +23,9 @@ module.exports = async (req, res) => {
         const BasicCommands = require('../src/commands/basicCommands');
         const { getWelcomeWithMenu, getMainMenuKeyboard, getHelpMessage } = require('../ui');
         
-        // Импортируем Exchange Manager и сервисы
-        const ExchangeManager = require('../src/exchangeManager');
-        
-        // Инициализируем Exchange Manager
-        const exchangeManager = new ExchangeManager();
-        
         // Инициализируем модульные обработчики
         const callbackHandler = new CallbackHandler(bot);
         const basicCommands = new BasicCommands(bot);
-        
-        // Передаем exchangeManager в basicCommands для работы с API
-        basicCommands.exchangeManager = exchangeManager;
         
         // Регистрируем команды
         basicCommands.registerCommands();
@@ -98,7 +89,7 @@ module.exports = async (req, res) => {
             res.status(200).json({ 
                 status: 'Crypto Tracker Bot is running',
                 timestamp: new Date().toISOString(),
-                exchanges: 'Ready for API calls'
+                mode: 'Basic functions only'
             });
         }
     } catch (error) {
