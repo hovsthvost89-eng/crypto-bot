@@ -85,11 +85,11 @@ module.exports = async (req, res) => {
             
             res.status(200).json({ ok: true });
         } else {
-            // GET запрос для проверки работоспособности
+            // GET запрос для проверки работоспособности - restored version
             res.status(200).json({ 
                 status: 'Crypto Tracker Bot is running',
                 timestamp: new Date().toISOString(),
-                mode: 'Basic functions only'
+                mode: 'Full functions restored'
             });
         }
     } catch (error) {
