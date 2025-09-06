@@ -100,3 +100,8 @@ module.exports = async (req, res) => {
         });
     }
 };
+>>>>>>> b56a6a8a684d32fad04d646bd79b414efdc9c0e1
+};
+=======
+};
+>>>>>>> b56a6a8a684d32fad04d646bd79b414efdc9c0e1
